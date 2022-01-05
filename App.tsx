@@ -1,5 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import {
+  Alert,
   ScrollView,
   StyleSheet,
   Text,
@@ -11,6 +12,7 @@ import {
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { theme } from "./colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Fontisto } from "@expo/vector-icons";
 
 interface Itodo {
   [key: string]: {
@@ -54,6 +56,21 @@ const App: FunctionComponent = () => {
     setText("");
   };
 
+  const deleteToDo = (key: string) => {
+    Alert.alert("Delte To do", "Are you sure?", [
+      { text: "Cancel" },
+      {
+        text: "I'm sure",
+        style: "destructive",
+        onPress: () => {
+          const newToDos = { ...toDos };
+          delete newToDos[key];
+          setToDos(newToDos);
+          saveToDos(newToDos);
+        },
+      },
+    ]);
+  };
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
@@ -93,6 +110,13 @@ const App: FunctionComponent = () => {
           toDos[key].working === working ? (
             <View style={styles.toDo} key={key}>
               <Text style={styles.toDoText}>{toDos[key].text}</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  deleteToDo(key);
+                }}
+              >
+                <Fontisto name="trash" size={18} color={theme.grey} />
+              </TouchableOpacity>
             </View>
           ) : null
         )}
@@ -131,6 +155,9 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 20,
     borderRadius: 15,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   toDoText: {
     color: "white",
